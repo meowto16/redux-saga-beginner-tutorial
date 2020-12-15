@@ -15,9 +15,23 @@ export function* helloSaga() {
   console.log('Hello Sagas!')
 }
 
+export function* fetchData() {
+  try {
+    const data = yield call(Api.fetchUser, action.payload.url)
+    yield put({ type: "FETCH_REQUESTED", data })
+  } catch (error) {
+    yield put({ type: "FETCH_FAILED", error })
+  }
+}
+
+export function* watchFetchData() {
+  yield takeEvery('FETCH_REQUESTED', fetchData)
+}
+
 export default function* rootSaga() {
   yield all([
     helloSaga(),
-    watchIncrementAsync()
+    watchIncrementAsync(),
+    watchFetchData()
   ])
 }
